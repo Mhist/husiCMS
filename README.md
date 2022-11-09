@@ -250,5 +250,194 @@ app.use(router)
 
 
 
+## 9.安装网络请求库axios
 
+### 安装网络请求库
+
+```bash
+npm install axios
+```
+
+```tsx
+import Axios from 'axios'
+const axios:any = Axios.create({
+    baseURL: 'http://119.91.213.59',
+    timeout: 3000,
+    headers: {
+       //添加数据头为json
+    'Content-Type':'application/json',
+    'Authorization': "AUTH_TOKEN",
+  }
+      
+  });
+
+export default axios
+```
+
+### 使用实例：
+
+```tsx
+import axios from "./api";
+
+
+
+export function login(userName:string,password:string){
+
+  return axios.post("users/login",{
+
+​    userName,
+
+​    password
+
+  })
+
+}
+```
+
+### 在vue文件中调用：
+
+```
+import { login } from '@/service/userApi'
+```
+
+```
+const submitForm = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate((valid, fields) => {
+    if (valid) {
+        login(ruleForm.username,ruleForm.password).then((res:any)=>{
+            console.log(res)
+            console.log(res.data.result.token)
+            ElNotification({
+                message:res.data.message,
+                type:'success'
+            })
+            // 存储token和用户信息
+
+            // 跳转到后台首页
+            router.push("/")
+        })
+        .catch((err:any)=>{
+            console.log(err)
+            ElNotification({
+                message:err.response.data.message || '请求失败',
+                type:'error'
+            })
+        })
+    } else {
+      console.log('error submit!', fields)
+    }
+  })
+```
+
+
+
+## 10.cookie操作
+
+ 
+
+ [vue3-cookies - npm (npmjs.com)](https://www.npmjs.com/package/vue3-cookies)
+
+###  安装vue-cookies
+
+```bash
+npm i vue3-cookies
+```
+
+### 使用vue-cookies
+
+```tsx
+import { useCookies } from "vue3-cookies";
+const { cookies } = useCookies();
+const hasToken = cookies.get('admin-token')
+if(hasToken){
+    cookies.remove("admin-token")
+}
+// 存储token和用户信息
+cookies.set('admin-token',token)
+```
+
+
+
+## 11.添加拦截器
+
+```tsx
+// 添加请求拦截器
+axios.interceptors.request.use(function (config) {
+    // 在发送请求之前做些什么
+    return config;
+  }, function (error) {
+    // 对请求错误做些什么
+    return Promise.reject(error);
+  });
+
+// 添加响应拦截器
+axios.interceptors.response.use(function (response) {
+    // 2xx 范围内的状态码都会触发该函数。
+    // 对响应数据做点什么
+    return response;
+  }, function (error) {
+    // 超出 2xx 范围的状态码都会触发该函数。
+    // 对响应错误做点什么
+    return Promise.reject(error);
+  });
+```
+
+```tsx
+import Axios from 'axios'
+import { ElNotification } from 'element-plus'
+import { useCookies } from "vue3-cookies";
+
+
+const axios:any = Axios.create({
+    baseURL: 'http://119.91.213.59',
+    timeout: 3000,
+    headers: {
+       //添加数据头为json
+    'Content-Type':'application/json',
+  }
+      
+  });
+
+  // 添加请求拦截器
+axios.interceptors.request.use(function (config:any) {
+  // 在发送请求之前做些什么
+
+  const { cookies } = useCookies();
+  const token = cookies.get('admin-token')
+  if(token){
+    config.headers["token"] = token
+  }
+  return config;
+}, function (error:any) {
+  // 对请求错误做些什么
+  return Promise.reject(error);
+});
+
+// 添加响应拦截器
+axios.interceptors.response.use(function (response:any) {
+  // 2xx 范围内的状态码都会触发该函数。
+  // 对响应数据做点什么
+  return response.data;
+}, function (err:any) {
+  // 超出 2xx 范围的状态码都会触发该函数。
+  // 对响应错误做点什么
+  if(err.response){
+    ElNotification({
+      message:err.response.data.message || '请求失败',
+      type:'error'
+  })
+  return Promise.reject(err.response.data);
+  }else{
+    ElNotification({
+      message:'网络错误、请检查网络后重试',
+      type:'error'
+  })
+  }
+ 
+ 
+});
+
+export default axios
+```
 

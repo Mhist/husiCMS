@@ -25,7 +25,7 @@
                         </template>
                         </el-input>
                     </el-form-item>
-                    <el-button type="primary" style="min-width: 300px;" class="ml-30 bg-blue-700" @click="submitForm(ruleFormRef)">登录</el-button> 
+                    <el-button type="primary" style="min-width: 300px;" class="ml-30 bg-blue-700" @click="submitForm(ruleFormRef)" :loading="loading">登录{{loading}}</el-button> 
                 </el-form>
 
             </el-col>
@@ -38,6 +38,9 @@ import { reactive,ref } from 'vue'
 import {useRouter} from 'vue-router'
 import { ElNotification, FormInstance, FormRules } from 'element-plus'
 import { login } from '@/service/userApi'
+import { useCookies } from "vue3-cookies";
+const { cookies } = useCookies();
+let loading = ref(false)
 
 const router = useRouter()
 // do not use same name with ref
@@ -67,25 +70,25 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
+        loading.value = true;
         login(ruleForm.username,ruleForm.password).then((res:any)=>{
-            console.log(res)
-            console.log(res.data.result.token)
+            const token = res.result.token
             ElNotification({
-                message:res.data.message,
+                message:res.message,
                 type:'success'
             })
+            const hasToken = cookies.get('admin-token')
+            if(hasToken){
+                cookies.remove("admin-token")
+            }
             // 存储token和用户信息
-
+            cookies.set('admin-token',token)
             // 跳转到后台首页
             router.push("/")
+        }).finally(()=>{
+            loading.value = false
         })
-        .catch((err:any)=>{
-            console.log(err)
-            ElNotification({
-                message:err.response.data.message || '请求失败',
-                type:'error'
-            })
-        })
+       
     } else {
       console.log('error submit!', fields)
     }
