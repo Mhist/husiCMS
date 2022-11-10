@@ -441,3 +441,108 @@ axios.interceptors.response.use(function (response:any) {
 export default axios
 ```
 
+## 12.统一封装cookie相关方法
+
+### 新建utils文件夹、新建cookie.ts
+
+```tsx
+import { useCookies } from "vue3-cookies";
+const { cookies } = useCookies();
+const TokenKey = 'admin-token'
+
+// 获取token
+export function getToken(){
+    return cookies.get(TokenKey)
+}
+// 设置token
+export function setToken(tokenKey:string){
+    return cookies.set(TokenKey,tokenKey)
+}
+// 删除token
+export function removeToken(){
+    return cookies.remove(TokenKey)
+}
+```
+
+### 在login.vue中使用
+
+```tsx
+import { getToken,setToken,removeToken} from '@/utils/cookie'
+```
+
+```tsx
+const hasToken = getToken()
+if(hasToken){
+    removeToken()
+}
+// 存储token和用户信息
+setToken(token)
+```
+
+### 在api.ts中使用
+
+```tsx
+// 在发送请求之前做些什么
+  const token = getToken()
+  if(token){
+    config.headers["token"] = token
+  }
+```
+
+
+
+## 13.element-plus消息提示封装
+
+### 定义封装函数：
+
+```tsx
+import { ElNotification } from 'element-plus';
+import { EpPropMergeType } from 'element-plus/es/utils';
+
+// 提示消息
+export function toast(
+    message: string,
+    type: EpPropMergeType<
+        StringConstructor,
+        'success' | 'warning' | 'info' | 'error',
+        unknown
+    > = 'success',
+    duration: number = 3000 //单位：毫秒
+) {
+    ElNotification({
+        message,
+        type,
+        duration,
+    });
+}
+
+```
+
+### 在login.vue中使用：
+
+```tsx
+import {toast} from '@/utils/notification'
+toast(res.message,"success")
+```
+
+### 在响应拦截器错误处理中使用：
+
+```tsx
+// 添加响应拦截器
+axios.interceptors.response.use(function (response:any) {
+  // 2xx 范围内的状态码都会触发该函数。
+  // 对响应数据做点什么
+  return response.data;
+}, function (err:any) {
+  // 超出 2xx 范围的状态码都会触发该函数。
+  // 对响应错误做点什么
+  if(err.response){
+    const errMessage = err.response.data.message||'请求失败'
+    toast(errMessage,'error')
+  return Promise.reject(err.response.data);
+  }else{
+      toast('网络错误、请检查网络后重试','error')
+  }
+});
+```
+

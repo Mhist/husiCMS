@@ -25,7 +25,7 @@
                         </template>
                         </el-input>
                     </el-form-item>
-                    <el-button type="primary" style="min-width: 300px;" class="ml-30 bg-blue-700" @click="submitForm(ruleFormRef)" :loading="loading">登录{{loading}}</el-button> 
+                    <el-button type="primary" style="min-width: 300px;" class="ml-30 bg-blue-700" @click="submitForm(ruleFormRef)" :loading="loading">登录</el-button> 
                 </el-form>
 
             </el-col>
@@ -38,8 +38,8 @@ import { reactive,ref } from 'vue'
 import {useRouter} from 'vue-router'
 import { ElNotification, FormInstance, FormRules } from 'element-plus'
 import { login } from '@/service/userApi'
-import { useCookies } from "vue3-cookies";
-const { cookies } = useCookies();
+import { getToken,setToken,removeToken} from '@/utils/cookie'
+import {toast} from '@/utils/notification'
 let loading = ref(false)
 
 const router = useRouter()
@@ -73,16 +73,13 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         loading.value = true;
         login(ruleForm.username,ruleForm.password).then((res:any)=>{
             const token = res.result.token
-            ElNotification({
-                message:res.message,
-                type:'success'
-            })
-            const hasToken = cookies.get('admin-token')
+            toast(res.message,"success")
+            const hasToken = getToken()
             if(hasToken){
-                cookies.remove("admin-token")
+                removeToken()
             }
             // 存储token和用户信息
-            cookies.set('admin-token',token)
+            setToken(token)
             // 跳转到后台首页
             router.push("/")
         }).finally(()=>{
