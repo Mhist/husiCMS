@@ -546,3 +546,158 @@ axios.interceptors.response.use(function (response:any) {
 });
 ```
 
+
+
+## 14.后端代码打tag
+
+因为之前的后端代码不是很完善、现在在线上的这部分代码先打个tag、在本地同时进行前后端开发。
+
+[Mhist/api at 1.0.0 (github.com)](https://github.com/Mhist/api/tree/1.0.0)
+
+
+
+## 15.后端开发及vite配置代理
+
+[vite 服务器代理配置]([开发服务器选项 | Vite 官方中文文档 (vitejs.dev)](https://cn.vitejs.dev/config/server-options.html#server-proxy))
+
+### 官方示例：
+
+```tsx
+export default defineConfig({
+  server: {
+    proxy: {
+      // 字符串简写写法
+      '/foo': 'http://localhost:4567',
+      // 选项写法
+      '/api': {
+        target: 'http://jsonplaceholder.typicode.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      },
+      // 正则表达式写法
+      '^/fallback/.*': {
+        target: 'http://jsonplaceholder.typicode.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/fallback/, '')
+      },
+      // 使用 proxy 实例
+      '/api': {
+        target: 'http://jsonplaceholder.typicode.com',
+        changeOrigin: true,
+        configure: (proxy, options) => {
+          // proxy 是 'http-proxy' 的实例
+        }
+      },
+      // Proxying websockets or socket.io
+      '/socket.io': {
+        target: 'ws://localhost:3000',
+        ws: true
+      }
+    }
+  }
+})
+
+```
+
+### 当前服务地址：
+
+|前后端后端     | 地址     |
+| -------- | -------- |
+| 线上后端地址 | baseURL: 'http://119.91.213.59' |
+| 本地后端地址  | baseURL: 'http://127.0.0.1:8000'  |
+| 本地前端地址  | baseURL: 'http://127.0.0.1:5173'  |
+
+因为线上后端、通过cors进行了配置所以不会有**跨域问题**。
+
+本地因为**端口号的不同**会有跨域问题、所以需要进行vite代理配置。
+
+配置文件：**vite.config.ts**的**server.proxy**
+
+```tsx
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import WindiCSS from 'vite-plugin-windicss'
+import path from 'path'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [
+    vue(),
+    // ...
+    WindiCSS(),
+  ],
+  resolve:{
+    alias:{
+      '@':path.resolve(__dirname,'./src')
+    }
+  },
+  server:{
+    proxy:{
+      // 选项写法
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      },  
+    }
+  }
+
+})
+
+```
+
+### axios的baseUrl配置：
+
+```tsx
+import Axios from 'axios'
+import { getToken } from '@/utils/cookie'
+import { toast } from '@/utils/notification';
+
+
+const axios:any = Axios.create({
+    // baseURL: 'http://119.91.213.59',//线上
+    baseURL: '/api',// 本地
+    timeout: 3000,
+    headers: {
+       //添加数据头为json
+    'Content-Type':'application/json',
+  }
+      
+  });
+
+  // 添加请求拦截器
+axios.interceptors.request.use(function (config:any) {
+  // 在发送请求之前做些什么
+  const token = getToken()
+  if(token){
+    config.headers["token"] = token
+  }
+  return config;
+}, function (error:any) {
+  // 对请求错误做些什么
+  return Promise.reject(error);
+});
+
+// 添加响应拦截器
+axios.interceptors.response.use(function (response:any) {
+  // 2xx 范围内的状态码都会触发该函数。
+  // 对响应数据做点什么
+  return response.data;
+}, function (err:any) {
+  // 超出 2xx 范围的状态码都会触发该函数。
+  // 对响应错误做点什么
+  if(err.response){
+    const errMessage = err.response.data.message||'请求失败'
+    toast(errMessage,'error')
+  return Promise.reject(err.response.data);
+  }else{
+      toast('网络错误、请检查网络后重试','error')
+  }
+ 
+ 
+});
+
+export default axios
+```
+
+![](https://files.catbox.moe/ft4vl2.png)

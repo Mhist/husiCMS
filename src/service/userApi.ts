@@ -6,3 +6,7 @@ export function login(userName:string,password:string){
         password
     })
 }
+
+export function userDetail(){
+    return axios.get("users/detail")
+}

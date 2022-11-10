@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { reactive,ref } from 'vue'
 import {useRouter} from 'vue-router'
-import { ElNotification, FormInstance, FormRules } from 'element-plus'
+import {  FormInstance, FormRules } from 'element-plus'
 import { login } from '@/service/userApi'
 import { getToken,setToken,removeToken} from '@/utils/cookie'
 import {toast} from '@/utils/notification'
