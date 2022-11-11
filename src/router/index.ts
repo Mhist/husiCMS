@@ -4,7 +4,7 @@ import {createRouter,createWebHashHistory} from 'vue-router'
 // const About = { template: '<div>About</div>' }
 // 也可以从其他文件导入
 import Index from '@/views/index.vue'
-import About from '@/views/about.vue'
+// import About from '@/views/about.vue'
 import Login from '@/views/login.vue'
 import NotFound from '@/views/404.vue'
 
@@ -13,7 +13,7 @@ import NotFound from '@/views/404.vue'
 // 我们后面再讨论嵌套路由。
 const routes = [
   { path: '/', component: Index },
-  { path: '/about', component: About },
+  // { path: '/about', component: About },
   { path: '/login', component: Login },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
 ]

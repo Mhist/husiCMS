@@ -701,3 +701,56 @@ export default axios
 ```
 
 ![](https://files.catbox.moe/ft4vl2.png)
+
+
+
+## 16.全局导航守卫
+
+utils文件夹下新建permission.ts文件：
+
+```tsx
+import router from '@/router/index'
+import {getToken} from '@/utils/cookie'
+import {toast} from '@/utils/notification'
+// GOOD
+const token = getToken()
+router.beforeEach((to, from, next) => {
+    if (from.path == '/login' && !token) {
+        next()
+    } 
+    else if (to.path !== '/login' && !token) {
+        toast("请先登录","error",1000)
+        next({ path: '/login' }) 
+    } 
+    else if(token && to.path == "/login") {
+        toast("请勿重复登录","error",1000)
+        next({path:from.path?from.path:"/"})
+    }
+    else next()
+})
+```
+
+17、处理属性结构数据
+
+参考文章：[前端权限管理之 addRoutes 动态加载路由踩坑 - 掘金 (juejin.cn)](https://juejin.cn/post/6844903793381883917)
+
+参考项目：[1942847253/yang-admin: 基于Vite+Vue3+Typescript+Pinia+ElementPlus的后台管理基础模板 (github.com)](https://github.com/1942847253/yang-admin)
+
+处理后端数据，生成树形结构数据、渲染侧边栏；
+
+动态添加路由、导入组件时候如果通过import导入会出现无法识别变量的情况。
+
+![](https://files.catbox.moe/savsnv.png)
+
+![](https://files.catbox.moe/yovh1w.png)
+
+所以需要用到：
+
+```
+const modules = import.meta.glob("../views/**.vue");
+// 路由文件中
+component:modules[   /* @vite-ignore */ `../views/${component}`],
+```
+
+![](https://files.catbox.moe/fe9rul.png)
+

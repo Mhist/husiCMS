@@ -40,6 +40,7 @@ import {  FormInstance, FormRules } from 'element-plus'
 import { login } from '@/service/userApi'
 import { getToken,setToken,removeToken} from '@/utils/cookie'
 import {toast} from '@/utils/notification'
+
 let loading = ref(false)
 
 const router = useRouter()
@@ -82,6 +83,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
             setToken(token)
             // 跳转到后台首页
             router.push("/")
+            
         }).finally(()=>{
             loading.value = false
         })
@@ -91,6 +93,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     }
   })
 }
+
 </script>
 
 <style scoped>

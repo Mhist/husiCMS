@@ -1,20 +1,29 @@
 <template>
-    <div>
-        123
+    <div class="common-layout">
+      <el-container>
+        <el-aside width="200px"><SideBar/></el-aside>
+        <el-container>
+          <el-header><Header/></el-header>
+          <el-main class="mx-10 mt-40"><router-view>123</router-view></el-main>
+          <el-footer><Footer/></el-footer>
+        </el-container>
+      </el-container>
     </div>
-</template>
+  </template>
+  
 
 <script setup lang="ts">
-import { userDetail } from '@/service/userApi'
-import {toast} from '@/utils/notification'
 
-userDetail().then((res:any)=>{
-    console.log(res)
-    toast(res.message,"success")
-}).catch((err:any)=>{
-    console.log(err)
-    toast(err.message,"success")
-});
+
+import SideBar from '@/layout/SideBar.vue'
+import Footer from '@/layout/Footer.vue'
+import Header from '@/layout/Header.vue'
+
+
+
+
+
+
 </script>
 
 <style lang="scss" scoped>
