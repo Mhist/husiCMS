@@ -1,11 +1,12 @@
 <template>
-    <div class="bg-red-300">
-      123
-    </div>
-  </template>
-  
+  <div class="">
+    菜单编辑
+  </div>
+</template>
+
 
 <script setup lang="ts">
+
 
 
 
