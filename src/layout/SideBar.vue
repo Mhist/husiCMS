@@ -10,17 +10,17 @@
       text-color="#ffffffa6"
     >
       <div class="logo">
-        <el-avatar :size="35" src="../assets/logo.png" />
-        <span>&nbsp;YangAdmin</span>
+        <el-avatar :size="35" :src="Logo" />
+        <span>&nbsp;JiangAdmin</span>
       </div>
       <el-menu-item index="/">
         <el-icon>
-          <List />
+          <House />
         </el-icon>
         <template #title>首页</template>
       </el-menu-item>
       <div v-for="(item, index) of menuList" :key="index">
-        <MenuItem :index="(index + 1).toString()" :item="item" />
+        <MenuItem :index="(index + 1).toString()" :item="item"  />
       </div>
     </el-menu>
   </div>
@@ -31,39 +31,29 @@ export default {
 };
 </script>
   <script lang="ts" setup>
-import { ref } from "vue";
+  import { ref } from "vue";
 import { getTreeMenus } from "@/utils/menu";
 import MenuItem from "@/layout/MenuItem.vue";
-import router from "@/router/index";
 import { RouteRecordRaw } from "vue-router";
-const modules = import.meta.glob("../views/**.vue");
-
-const isCollapse = ref(true);
-const handleOpen = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath);
-};
-const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath);
-};
-
+import Logo from "@/assets/logo.png";
 let jsonData = [
   {
     id: 1,
     parentId: 0,
-    title: "一级菜单A",
-    icon: "Edit",
-    path: "/about",
-    component: "about.vue",
+    title: "系统管理",
+    icon: "Setting",
+    path: "/",
+    component: "",
     hidden: "",
     redirect: "",
-    name: "About",
+    name: "",
     keep: "0",
     meta: {},
   },
   {
     id: 2,
     parentId: 0,
-    title: "一级菜单B",
+    title: "权限管理",
     icon: "Edit",
     path: "/",
     component: "",
@@ -76,8 +66,8 @@ let jsonData = [
   {
     id: 3,
     parentId: 0,
-    title: "一级菜单C",
-    icon: "Edit",
+    title: "媒体管理",
+    icon: "Picture",
     path: "/",
     component: "",
     hidden: "",
@@ -89,8 +79,8 @@ let jsonData = [
   {
     id: 4,
     parentId: 1,
-    title: "二级菜单A",
-    icon: "Edit",
+    title: "预留",
+    icon: "Folder",
     path: "/",
     component: "",
     hidden: "",
@@ -102,7 +92,7 @@ let jsonData = [
   {
     id: 5,
     parentId: 1,
-    title: "二级菜单B",
+    title: "预留",
     icon: "Edit",
     path: "/",
     component: "",
@@ -115,92 +105,58 @@ let jsonData = [
   {
     id: 6,
     parentId: 2,
-    title: "三级菜单C",
+    title: "菜单编辑",
     icon: "Edit",
-    path: "/",
-    component: "",
+    path: "/menuEdit",
+    component: "permission/menuEdit.vue",
     hidden: "",
     redirect: "",
-    name: "",
+    name: "MenuEdit",
     keep: "0",
     meta: {},
   },
   {
     id: 7,
     parentId: 2,
-    title: "三级菜单A",
+    title: "权限分配",
     icon: "Edit",
-    path: "/",
-    component: "",
+    path: "/permissionAssignment",
+    component: "permission/permissionAssignment.vue",
     hidden: "",
     redirect: "",
-    name: "",
+    name: "PermissionAssignment",
     keep: "0",
     meta: {},
   },
   {
     id: 8,
-    parentId: 3,
-    title: "四级菜单A",
+    parentId: 2,
+    title: "用户列表",
     icon: "Edit",
-    path: "/",
-    component: "",
+    path: "/userList",
+    component: "permission/userList.vue",
     hidden: "",
     redirect: "",
-    name: "",
+    name: "UserList",
     keep: "0",
     meta: {},
   },
   {
     id: 9,
-    parentId: 4,
-    title: "五级菜单A",
-    icon: "Edit",
-    path: "/",
-    component: "",
+    parentId: 3,
+    title: "七牛云图床管理",
+    icon: "Picture",
+    path: "/picture",
+    component: "media/picture.vue",
     hidden: "",
     redirect: "",
-    name: "",
+    name: "Picture",
     keep: "0",
     meta: {},
   },
+
 ];
 const menuList: Array<any> = getTreeMenus(jsonData);
-console.log(menuList);
-// 初始化路由信息对象
-const menusMap: any = {};
-menuList.map((v) => {
-  const { path, name, component, redirect, hidden, meta } = v;
-  console.log(component,"component")
-  // 重新构建路由对象
-  const item = {
-    path,
-    name,
-    component:
-        modules[
-            /* @vite-ignore */ `../views/${component}`
-        ],
-    redirect,
-    hidden,
-    meta,
-  };
-  meta.length !== 0 && (item.meta = meta);
-  console.log(item.component,"item")
-  // 判断是否为根节点
-  if (v.parentId === 0) {
-    menusMap[v.id] = item;
-  } else {
-    !menusMap[v.parentId].children && (menusMap[v.parentId].children = []);
-    menusMap[v.parentId].children.push(item);
-  }
-
-  // 将生成数组树状菜单添加到Router中
-  const routes: Array<Object> = Object.values(menusMap);
-  console.log(routes, "routes>>>>>>>>>>@");
-  routes.map((v:any) => {
-    router.addRoute(v);
-  });
-});
 </script>
   
 

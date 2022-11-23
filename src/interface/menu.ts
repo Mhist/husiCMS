@@ -5,7 +5,7 @@ export interface IMenuItem {
     icon: string;              // 菜单图标
     component:string;          // 组件路径/组件名
     hidden:string;             // 是否隐藏
-    redirect:string;           // 重定向
+    redirect:any;           // 重定向
     name:string;               // 路由名name
     path: string;              // 路由地址path 
     keep:string;               // keep--alive
@@ -27,6 +27,8 @@ export interface ITreeMenuItem {
     icon: string;
     link?: string;
     meta:Object;               // 路由元信息
+    component:string;          // 组件路径/组件名
+  
     
 }
 
