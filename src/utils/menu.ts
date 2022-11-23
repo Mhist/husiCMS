@@ -1,7 +1,7 @@
 import { RouteRecordRaw } from "vue-router";
 import { IMenuItem, ITreeMenuItem, IUserRouterItem } from "../interface/menu";
 
-const modules = import.meta.glob("../view/**/**.vue");
+
 
 interface ICache {
   [key: number]: ITreeMenuItem
@@ -32,42 +32,7 @@ export const getTreeMenus = (menuList: IMenuItem[]): ITreeMenuItem[] => {
   return treeMenuList;
 };
 
-/**
- * @description 转化动态路由
- * @param userRouters -用户路由的树形列表
- * @author JJYang
- */
- export const generateRouter = (userRouters: ITreeMenuItem[]) => {
-  let newRouters: RouteRecordRaw[] = userRouters.map((router: ITreeMenuItem) => {
-    const isParent = router.parentId === 0 && router.children;
-    // const fileName = router.path.match(/\/([^/]*)$/)![1];
-    const component = router.component
-    let routes: RouteRecordRaw = {
-      path: router.path,
-      name: router.name,
-      meta: {
-        icon: router.icon,
-      },
-      component:
-        modules[
-            /* @vite-ignore */ `../views/${component}`
-        ],
-        children:[],
-        redirect:'',
-    };
 
-    if (isParent) {
-      routes.redirect = router.children![0].path;
-      routes.component = () =>
-        import(/* @vite-ignore */ `@/components/ParentView/ParentView.vue`)
-    }
-    if (routes && router.children) {
-      routes.children = generateRouter(router.children);
-    }
-    return routes;
-  });
-  return newRouters;
-};
 
 /**
  * @description 数组扁平化
