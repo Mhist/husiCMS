@@ -1,6 +1,6 @@
-import {createRouter,createWebHashHistory} from 'vue-router'
-import { generateRouter } from "@/utils/menu";
-const modules = import.meta.glob("@/views/**.vue");
+import {createRouter,createWebHashHistory,RouteRecordRaw} from 'vue-router'
+import { generateRouter,getTreeMenus } from "@/utils/menu";
+import {  } from 'vue-router'
 // 1. 定义路由组件.
 // const Home = { template: '<div>Home</div>' }
 // 也可以从其他文件导入
@@ -9,12 +9,11 @@ import Index from '@/views/index.vue'
 import Login from '@/views/login.vue'
 import NotFound from '@/views/404.vue'
 
-import MenuEdit from '@/views/permission/menuEdit.vue'
 
 // 2. 定义一些路由
 // 每个路由都需要映射到一个组件。
 // 我们后面再讨论嵌套路由。
-const routes = [
+const routes:RouteRecordRaw[] = [
   { path: '/', 
   component: Layout,
   redirect:"/",
@@ -23,14 +22,13 @@ const routes = [
       path: '/',
       component: Index,
     },
-    { path: '/menuEdit', component: MenuEdit },
   ]
   },
   // layout
   { 
     path: '/', 
     component: Layout,
-    name:Layout,
+    name:'Layout',
     children: [
       {
         path: "/index",
@@ -39,14 +37,9 @@ const routes = [
         component: () =>
           import("../components/ParentView/ParentView.vue"),
         children: [
-          {
-            path: "/",
-            name: "/",
-          },
         ],
       }]
 },
-  // { path: '/about', component: About },
   { path: '/login', 
   component: Login 
   },
@@ -66,12 +59,6 @@ const router = createRouter({
 
 
 
-import { getTreeMenus } from "@/utils/menu";
-import MenuItem from "@/layout/MenuItem.vue";
-import { RouteRecordRaw } from "vue-router";
-import { Obj } from '@popperjs/core';
-
-
 
 let jsonData = [
   {
@@ -80,7 +67,7 @@ let jsonData = [
     title: "系统管理",
     icon: "Setting",
     path: "/",
-    component: "",
+    component: "media/picture.vue",
     hidden: "",
     redirect: "",
     name: "",
@@ -93,7 +80,7 @@ let jsonData = [
     title: "权限管理",
     icon: "Edit",
     path: "/",
-    component: "",
+    component: "media/picture.vue",
     hidden: "",
     redirect: "",
     name: "",
@@ -106,7 +93,7 @@ let jsonData = [
     title: "媒体管理",
     icon: "Picture",
     path: "/",
-    component: "",
+    component: "media/picture.vue",
     hidden: "",
     redirect: "",
     name: "",
@@ -119,7 +106,7 @@ let jsonData = [
     title: "预留",
     icon: "Folder",
     path: "/",
-    component: "",
+    component: "media/picture.vue",
     hidden: "",
     redirect: "",
     name: "",
@@ -132,7 +119,7 @@ let jsonData = [
     title: "预留",
     icon: "Edit",
     path: "/",
-    component: "",
+    component: "media/picture.vue",
     hidden: "",
     redirect: "",
     name: "",
@@ -197,8 +184,9 @@ const menuList: Array<any> = getTreeMenus(jsonData);
 console.log(menuList)
 let newRoutes = generateRouter(menuList);
 console.log(newRoutes,"newRoutes")
+console.log(routes)
 const layout:any = routes[1];
-console.log(layout)
+console.log(layout,">>>>>>>>>>")
 layout.children = [...newRoutes];
 router.addRoute(layout);
 

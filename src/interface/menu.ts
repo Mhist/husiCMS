@@ -28,6 +28,7 @@ export interface ITreeMenuItem {
     link?: string;
     meta:Object;               // 路由元信息
     component:string;          // 组件路径/组件名
+    redirect :any;
   
     
 }

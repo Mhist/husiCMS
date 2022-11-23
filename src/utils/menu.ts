@@ -1,7 +1,7 @@
 import { RouteRecordRaw } from "vue-router";
 import { IMenuItem, ITreeMenuItem, IUserRouterItem } from "../interface/menu";
 
-const modules = import.meta.glob("../view/**/**.vue");
+const modules = import.meta.glob("../views/**/**.vue");
 
 interface ICache {
   [key: number]: ITreeMenuItem
@@ -41,19 +41,20 @@ export const getTreeMenus = (menuList: IMenuItem[]): ITreeMenuItem[] => {
   let newRouters: RouteRecordRaw[] = userRouters.map((router: ITreeMenuItem) => {
     const isParent = router.parentId === 0 && router.children;
     // const fileName = router.path.match(/\/([^/]*)$/)![1];
-    const component = router.component
+    const componentName = router.component
+    console.log(componentName,"*********")
     let routes: RouteRecordRaw = {
       path: router.path,
       name: router.name,
       meta: {
         icon: router.icon,
       },
+      redirect: router.redirect || '',
+      children:[],
       component:
         modules[
-            /* @vite-ignore */ `../views/${component}`
+            /* @vite-ignore */ `../views/${componentName}`
         ],
-        children:[],
-        redirect:'',
     };
 
     if (isParent) {
